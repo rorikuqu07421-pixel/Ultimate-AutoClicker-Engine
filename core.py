@@ -1,59 +1,67 @@
 import time
-import threading
-from typing import Callable
+from threading import Thread, Event
+from typing import Callable, Optional
 
 class AutoClicker:
-    def __init__(self, click_function: Callable[[], None], interval: float) -> None:
+    """
+    A class that implements an auto clicker functionality.
+    
+    Attributes:
+        interval (float): Time in seconds between clicks.
+        running (Event): An event used to control the sound repetition loop.
+        click_function (Callable): The function that performs the clicking action.
+    """
+
+    def __init__(self, interval: float = 0.1, click_function: Optional[Callable] = None) -> None:
         """
-        Initialize the AutoClicker instance.
+        Initializes the AutoClicker with the specified interval and click function.
         
-        :param click_function: A callable function that will be executed on each click.
-        :param interval: The time interval between consecutive clicks in seconds.
+        Args:
+            interval (float): Time in seconds between clicks. Defaults to 0.1 seconds.
+            click_function (Callable): The actual function to be executed on each click.
         """
-        self.click_function = click_function
         self.interval = interval
-        self.is_running = False
-        self.thread = threading.Thread(target=self.run)
+        self.running = Event()
+        self.click_function = click_function if click_function is not None else self.default_click
+
+    def default_click(self) -> None:
+        """
+        A default click function that simulates a mouse click.
+        This method can be overridden by a user-defined function.
+        """
+        print('Click!')  # In a real implementation, this would simulate a mouse click.
 
     def start(self) -> None:
         """
-        Start the auto-clicker.
-        If the auto-clicker is already running, this method does nothing.
-        """        
-        if not self.is_running:
-            self.is_running = True
-            self.thread.start()
+        Starts the auto clicking process in a separate thread.
+        The clicking will continue until stopped.
+        """
+        self.running.set()
+        Thread(target=self._click_loop, daemon=True).start()
+
+    def _click_loop(self) -> None:
+        """
+        The main loop that performs the auto clicking action.
+        This method runs in a separate thread and will
+        continuously click at the set interval as long as running is True.
+        """
+        while self.running.is_set():
+            start_time = time.time()
+            self.click_function()  # Executes click function
+            time_to_wait = self.interval - (time.time() - start_time)
+            if time_to_wait > 0:
+                time.sleep(time_to_wait)
 
     def stop(self) -> None:
         """
-        Stop the auto-clicker.
-        If the auto-clicker is not running, this method does nothing.
-        """        
-        if self.is_running:
-            self.is_running = False
-            self.thread.join()  # Ensure the thread finishes execution.
-
-    def run(self) -> None:
+        Stops the auto clicking process safely.
+        This method sets the running event to false, allowing the loop to exit.
         """
-        The main loop that runs concurrently to trigger the click function at the specified interval.
-        This method should only be called internally.
-        """        
-        while self.is_running:
-            start_time = time.time()  # Record the start time of each click.
-            self.click_function()  # Call the specified click function.
-            elapsed_time = time.time() - start_time  # Calculate how long the click took.
+        self.running.clear()
 
-            time_to_sleep = self.interval - elapsed_time
-            if time_to_sleep > 0:
-                time.sleep(time_to_sleep)  # Sleep to maintain the desired interval.
-
-# Example of a click function to be passed to AutoClicker
-def example_click():
-    print("Clicked!")
-
-# Usage of AutoClicker.
+# Example usage of the AutoClicker
 if __name__ == '__main__':
-    ac = AutoClicker(example_click, 1.0)  # Set interval to 1 second.
-    ac.start()  # Start clicking.
-    time.sleep(5)  # Let it click for 5 seconds.
-    ac.stop()  # Stop clicking.
+    clicker = AutoClicker(interval=0.2)
+    clicker.start()  # Start the auto clicker
+    time.sleep(5)  # Let it run for 5 seconds
+    clicker.stop()  # Stop the auto clicker
