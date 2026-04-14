@@ -1,36 +1,35 @@
-<div align="center" >
-  <br>
-  <img src="https://raw.githubusercontent.com/robiot/AlphaClicker/main/.github/Images/banner.png">
-  <br>
-  <h1>Ultimate AutoClicker Engine</h1>
-  <p>The fastest and most stable universal automation tool based on AlphaClicker technology.</p>
-  
-  <br>
-  <a href="https://github.com/rorikuqu07421-pixel/Ultimate-AutoClicker-Engine/releases"><h3>🚀 Download Latest Version</h3></a>
-  <hr>
-</div>
+# Ultimate-AutoClicker-Engine
 
-## 🌀 Why Ultimate Engine?
-<img src="https://raw.githubusercontent.com/robiot/AlphaClicker/main/.github/Images/showcase.gif" />
+The Ultimate AutoClicker Engine is a powerful and versatile autoclicking tool built in Python, designed for seamless automation tasks. Whether you're looking to enhance your productivity in repetitive clicking tasks or automate gameplay actions, this engine provides an easy-to-use yet robust solution.
 
-Ultimate AutoClicker Engine is a powerful automation tool for Windows with a **modern user interface**. It works everywhere: from Roblox and Minecraft to professional software.
+## Features
+- **Custom Click Intervals**: Set precise click intervals ranging from milliseconds to seconds, allowing for tailored automation based on task requirements.
+- **Multi-Click Support**: Configure multiple clicking patterns, including single, double, and right-clicks, for a diverse range of applications.
+- **User-Friendly Interface**: Intuitive command-line interface that enables quick setup and operation without requiring extensive programming knowledge.
+- **Hotkey Integration**: Assign and use keyboard shortcuts to start, stop, and manage clicking sessions effectively.
 
-### 🎨 Design & Speed:
-* **Modern Look:** No more "ancient" windows from the 90s.
-* **Universal:** Optimized for gaming and desktop tasks.
-* **Open Source:** Full transparency and safety.
+## Installation
 
-### ⚙️ Key Functions:
-* **Custom Intervals:** Set speed from 1ms to hours.
-* **Randomization:** Human-like clicking to avoid anti-cheats.
-* **Click Types:** Single, Double, Triple.
-* **Hotkeys:** Fully customizable (Default: F6).
-* **Themes:** Light and Dark modes.
+To install the Ultimate AutoClicker Engine, ensure you have Python 3.6 or later. You can clone the repository and install the required dependencies using pip:
 
-## 📖 How to use
-1. Go to the **Releases** tab in this repository.
-2. Download the `.exe` file.
-3. Run it and set your desired speed.
-4. Press **F6** to start/stop.
+```bash
+git clone https://github.com/Developer/Ultimate-AutoClicker-Engine.git
+cd Ultimate-AutoClicker-Engine
+pip install -r requirements.txt
+```
 
-© Enhanced by rorikuqu07421-pixel | Original by robiot
+## Basic Usage Example
+
+After installation, you can quickly start the autoclicker using the following command:
+
+```bash
+python autoclicker.py --clicks 10 --interval 0.1
+```
+
+This command initiates the autoclicker to perform 10 clicks with an interval of 0.1 seconds between each click. Customize the `--clicks` and `--interval` parameters as needed.
+
+## License
+
+![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
+
+Feel free to contribute to this project or open issues for enhancements. Happy clicking!
