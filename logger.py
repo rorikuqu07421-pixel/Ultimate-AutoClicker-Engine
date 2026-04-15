@@ -1,37 +1,24 @@
 import logging
-from typing import Any, Optional
+import os
+from logging.handlers import RotatingFileHandler
 
-
-def setup_logger(name: str, level: int = logging.INFO) -> logging.Logger:
-    """
-    Configures a logger with a specific name and level.
+def setup_logger(log_file='app.log', max_bytes=10*1024*1024, backup_count=5):
+    logger = logging.getLogger('AutoClickerLogger')
+    logger.setLevel(logging.DEBUG)
     
-    Args:
-        name (str): The name of the logger.
-        level (int): The logging level (default: logging.INFO).
+    if not logger.handlers:
+        # Create a directory for logs if it doesn't exist
+        os.makedirs(os.path.dirname(log_file), exist_ok=True)
+        
+        handler = RotatingFileHandler(log_file, maxBytes=max_bytes, backupCount=backup_count)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
     
-    Returns:
-        logging.Logger: Configured logger instance.
-    """
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler = logging.StreamHandler()
-    handler.setFormatter(formatter)  
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    logger.addHandler(handler)
     return logger
 
-
-def log_message(logger: logging.Logger, message: str, level: Optional[int] = None) -> None:
-    """
-    Logs a message with the specified logger at the given level.
-    
-    Args:
-        logger (logging.Logger): The logger to use.
-        message (str): The message to log.
-        level (Optional[int]): The logging level (default: None, using logger's level).
-    """
-    if level:
-        logger.log(level, message)
-    else:
-        logger.info(message)
+if __name__ == '__main__':
+    log = setup_logger()
+    log.info('Logger is set up successfully!')
+    log.debug('This is a debug message.')
+    log.error('This is an error message.')
