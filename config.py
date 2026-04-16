@@ -1,29 +1,23 @@
 import json
 import os
 
-DEFAULT_CONFIG = {
-    'click_interval': 0.1,
-    'max_clicks': 1000,
-    'enabled': True,
-    'click_type': 'left',
-}
+def load_config(filename='config.json', defaults=None):
+    if defaults is None:
+        defaults = {}
+    if not os.path.isfile(filename):
+        return defaults
+    with open(filename, 'r') as file:
+        try:
+            config = json.load(file)
+        except json.JSONDecodeError:
+            return defaults
+    return {**defaults, **config}
 
-class ConfigLoader:
-    def __init__(self, config_file='config.json'):
-        self.config_file = config_file
-        self.config = self.load_config()
-
-    def load_config(self):
-        if os.path.exists(self.config_file):
-            with open(self.config_file, 'r') as file:
-                config = json.load(file)
-                return self.merge_configs(DEFAULT_CONFIG, config)
-        return DEFAULT_CONFIG
-
-    def merge_configs(self, defaults, custom):
-        merged = defaults.copy()
-        merged.update(custom)
-        return merged
-
-    def get(self, key, default=None):
-        return self.config.get(key, default)
+if __name__ == '__main__':
+    default_config = {
+        'click_interval': 0.1,
+        'click_count': 100,
+        'mouse_button': 'left'
+    }
+    config = load_config(defaults=default_config)
+    print(config)
