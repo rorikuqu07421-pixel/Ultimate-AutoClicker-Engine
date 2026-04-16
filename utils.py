@@ -1,32 +1,36 @@
 import json
-import os
 
-def save_click_data(data, filename):
-    with open(filename, 'w') as file:
-        json.dump(data, file, indent=4)
-
-
-def load_click_data(filename):
-    if not os.path.exists(filename):
-        raise FileNotFoundError(f"{filename} does not exist.")
-    with open(filename, 'r') as file:
-        return json.load(file)
+def load_config(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            config = json.load(file)
+        return config
+    except FileNotFoundError:
+        raise FileNotFoundError(f'Config file not found: {file_path}')
+    except json.JSONDecodeError:
+        raise ValueError('Error decoding JSON from the config file')
 
 
-def filter_clicks_by_time(data, start_time, end_time):
-    return [click for click in data if start_time <= click['timestamp'] <= end_time]
+def save_config(file_path, config_data):
+    with open(file_path, 'w') as file:
+        json.dump(config_data, file, indent=4)
+
+
+def merge_configs(defaults, custom):
+    merged = defaults.copy()
+    merged.update(custom)
+    return merged
+
+
+def validate_click_data(data):
+    required_keys = ['click_interval', 'click_count', 'target']
+    for key in required_keys:
+        if key not in data:
+            raise KeyError(f'Missing required key: {key}')
+        if not isinstance(data[key], (int, float)):
+            raise TypeError(f'Key {key} must be an integer or float')
+    return True
 
 
 def format_click_data(data):
-    return [f"{click['timestamp']}: Clicked at position {click['position']}" for click in data]
-
-
-def aggregate_clicks(data):
-    positions = {}
-    for click in data:
-        pos = click['position']
-        if pos in positions:
-            positions[pos] += 1
-        else:
-            positions[pos] = 1
-    return positions
+    return f"Clicking {data['click_count']} times at {data['click_interval']}ms interval on {data['target']}"
