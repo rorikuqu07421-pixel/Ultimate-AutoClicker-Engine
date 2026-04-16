@@ -1,20 +1,27 @@
-class ClickerConstants:
-    CLICK_INTERVAL = 0.01  # Time between clicks in seconds
-    DEFAULT_CLICKS = 100  # Default number of clicks
-    CLICKER_NAME = 'Ultimate AutoClicker'
-    SUPPORTED_OS = ['Windows', 'Linux', 'Mac']
-    MAX_CLICKS_PER_SECOND = 1000  # Max clicks allowed per second
+from typing import Final
 
-class Colors:
-    GREEN = '\033[92m'
-    RED = '\033[91m'
-    RESET = '\033[0m'
+# Click intervals in milliseconds
+CLICK_INTERVAL: Final[int] = 100
+DOUBLE_CLICK_INTERVAL: Final[int] = 200
 
-class ErrorMessages:
-    INVALID_CLICK_COUNT = 'Error: Invalid click count provided.'
-    OS_NOT_SUPPORTED = 'Error: Operating system not supported.'
-    CONFIG_LOAD_FAILED = 'Error: Failed to load configuration.'
+# Mouse button identifiers
+LEFT_BUTTON: Final[int] = 1
+RIGHT_BUTTON: Final[int] = 2
+MIDDLE_BUTTON: Final[int] = 3
 
-# Usage:
-# from constants import ClickerConstants, Colors, ErrorMessages
-# print(f'{Colors.GREEN}Clicker Ready!{Colors.RESET}')
+# Click types
+class ClickType:
+    SINGLE: Final[str] = 'single'
+    DOUBLE: Final[str] = 'double'
+
+# Default configuration
+DEFAULT_CONFIG: Final[dict] = {
+    'click_type': ClickType.SINGLE,
+    'interval': CLICK_INTERVAL,
+    'button': LEFT_BUTTON
+}
+
+def get_config() -> dict:
+    """Returns the default click configuration."""
+    return DEFAULT_CONFIG
+
