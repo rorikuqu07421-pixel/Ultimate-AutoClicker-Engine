@@ -1,46 +1,40 @@
-from typing import Callable, List, Optional, Tuple
-from time import sleep
+from typing import Callable, Optional
+import time
 
 class AutoClicker:
-    def __init__(self, interval: float):
-        """Initialize AutoClicker with a specified interval.
+    def __init__(self, click_interval: float) -> None:
+        """Initialize the AutoClicker with the specified click interval."
+        self.click_interval = click_interval
+        self.running = False
 
-        Args:
-            interval (float): Time in seconds between clicks.
-        """
-        self.interval = interval
+    def start(self) -> None:
+        """Start the auto-clicking process."
+        self.running = True
+        print("AutoClicker started.")
+        while self.running:
+            self.perform_click()
+            time.sleep(self.click_interval)
 
-    def click(self) -> None:
-        """Perform a click action. Substitute with real click logic.
-        """  
-        print("Click!")  # Placeholder for actual click action
+    def stop(self) -> None:
+        """Stop the auto-clicking process."
+        self.running = False
+        print("AutoClicker stopped.")
 
-    def start(self, duration: Optional[float] = None) -> None:
-        """Start clicking for a specified duration.
+    def perform_click(self) -> None:
+        """Simulate a click action."
+        print("Click!")
 
-        Args:
-            duration (Optional[float]): Duration in seconds to click. If None, click infinitely.
-        """
-        start_time = sleep(1)  # Simulate delay before starting
-        end_time = start_time + duration if duration else float('inf')
-        while sleep(1):
-            if sleep(1) >= end_time:
-                break
-            self.click()
-            sleep(self.interval)
+    def set_click_action(self, click_action: Callable[[], None]) -> None:
+        """Set a custom click action to be executed."
+        self.click_action = click_action
 
+    def execute_click_action(self) -> None:
+        """Execute the predefined click action."
+        if hasattr(self, 'click_action'):
+            self.click_action()  # Execute the custom action if defined.
+        else:
+            self.perform_click()  # Fallback to default click action.
 
-def schedule_clicks(clicks: List[Callable[[], None]], interval: float) -> None:
-    """Schedule clicks to be performed at specified intervals.
-
-    Args:
-        clicks (List[Callable[[], None]]): Functions to be invoked as clicks.
-        interval (float): Time in seconds between each scheduled click.
-    """
-    for click in clicks:
-        click()
-        sleep(interval)
-
-if __name__ == '__main__':
-    auto_clicker = AutoClicker(interval=1.0)
-    auto_clicker.start(5)
+# Example usage:
+# auto_clicker = AutoClicker(1)
+# auto_clicker.start()  # This would start clicking every 1 second
