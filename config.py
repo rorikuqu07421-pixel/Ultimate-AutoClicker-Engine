@@ -1,23 +1,31 @@
 import json
 import os
 
-def load_config(filename='config.json', defaults=None):
-    if defaults is None:
-        defaults = {}
-    if not os.path.isfile(filename):
-        return defaults
-    with open(filename, 'r') as file:
-        try:
-            config = json.load(file)
-        except json.JSONDecodeError:
-            return defaults
-    return {**defaults, **config}
+DEFAULT_CONFIG = {
+    'click_interval': 100,
+    'max_clicks': 1000,
+    'enabled': False,
+    'output_file': 'output.txt',
+}
 
-if __name__ == '__main__':
-    default_config = {
-        'click_interval': 0.1,
-        'click_count': 100,
-        'mouse_button': 'left'
-    }
-    config = load_config(defaults=default_config)
-    print(config)
+class ConfigLoader:
+    def __init__(self, config_file):
+        self.config_file = config_file
+        self.config = DEFAULT_CONFIG.copy()
+        self.load_config()
+
+    def load_config(self):
+        if os.path.isfile(self.config_file):
+            with open(self.config_file, 'r') as f:
+                user_config = json.load(f)
+                self.config.update(user_config)
+
+    def get(self, key):
+        return self.config.get(key, DEFAULT_CONFIG.get(key))
+
+    def set(self, key, value):
+        self.config[key] = value
+
+    def save(self):
+        with open(self.config_file, 'w') as f:
+            json.dump(self.config, f, indent=4)
