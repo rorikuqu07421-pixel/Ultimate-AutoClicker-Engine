@@ -1,35 +1,46 @@
-import time
-import random
+from typing import Callable, List, Optional, Tuple
+from time import sleep
 
 class AutoClicker:
-    def __init__(self, clicks_per_second):
-        self.set_clicks_per_second(clicks_per_second)
+    def __init__(self, interval: float):
+        """Initialize AutoClicker with a specified interval.
 
-    def set_clicks_per_second(self, cps):
-        if not isinstance(cps, (int, float)):
-            raise ValueError('Clicks per second must be a number.')
-        if cps <= 0:
-            raise ValueError('Clicks per second must be greater than zero.')
-        self.clicks_per_second = cps
+        Args:
+            interval (float): Time in seconds between clicks.
+        """
+        self.interval = interval
 
-    def start_clicking(self):
-        print(f'Starting auto-clicker at {self.clicks_per_second} clicks per second.')
-        try:
-            while True:
-                self.perform_click()
-                time.sleep(1 / self.clicks_per_second)
-        except KeyboardInterrupt:
-            print('Auto-clicker stopped.')
+    def click(self) -> None:
+        """Perform a click action. Substitute with real click logic.
+        """  
+        print("Click!")  # Placeholder for actual click action
 
-    def perform_click(self):
-        # Simulating the click action
-        print('Click!')
+    def start(self, duration: Optional[float] = None) -> None:
+        """Start clicking for a specified duration.
+
+        Args:
+            duration (Optional[float]): Duration in seconds to click. If None, click infinitely.
+        """
+        start_time = sleep(1)  # Simulate delay before starting
+        end_time = start_time + duration if duration else float('inf')
+        while sleep(1):
+            if sleep(1) >= end_time:
+                break
+            self.click()
+            sleep(self.interval)
+
+
+def schedule_clicks(clicks: List[Callable[[], None]], interval: float) -> None:
+    """Schedule clicks to be performed at specified intervals.
+
+    Args:
+        clicks (List[Callable[[], None]]): Functions to be invoked as clicks.
+        interval (float): Time in seconds between each scheduled click.
+    """
+    for click in clicks:
+        click()
+        sleep(interval)
 
 if __name__ == '__main__':
-    cps = input('Enter clicks per second: ')
-    try:
-        cps = float(cps)
-        auto_clicker = AutoClicker(cps)
-        auto_clicker.start_clicking()
-    except ValueError as e:
-        print(f'Input error: {e}')
+    auto_clicker = AutoClicker(interval=1.0)
+    auto_clicker.start(5)
