@@ -1,24 +1,43 @@
 import logging
-import os
-from logging.handlers import RotatingFileHandler
 
-def setup_logger(log_file='app.log', max_bytes=10*1024*1024, backup_count=5):
-    logger = logging.getLogger('AutoClickerLogger')
-    logger.setLevel(logging.DEBUG)
-    
-    if not logger.handlers:
-        # Create a directory for logs if it doesn't exist
-        os.makedirs(os.path.dirname(log_file), exist_ok=True)
-        
-        handler = RotatingFileHandler(log_file, maxBytes=max_bytes, backupCount=backup_count)
+class CustomLogger:
+    def __init__(self, name):
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(logging.DEBUG)
+        self._create_console_handler()
+        self._create_file_handler()
+
+    def _create_console_handler(self):
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.INFO)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-    
-    return logger
+        console_handler.setFormatter(formatter)
+        self.logger.addHandler(console_handler)
 
+    def _create_file_handler(self):
+        file_handler = logging.FileHandler('app.log')
+        file_handler.setLevel(logging.ERROR)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        file_handler.setFormatter(formatter)
+        self.logger.addHandler(file_handler)
+
+    def debug(self, message):
+        self.logger.debug(message)
+
+    def info(self, message):
+        self.logger.info(message)
+
+    def warning(self, message):
+        self.logger.warning(message)
+
+    def error(self, message):
+        self.logger.error(message)
+
+    def critical(self, message):
+        self.logger.critical(message)
+
+# Example usage:
 if __name__ == '__main__':
-    log = setup_logger()
-    log.info('Logger is set up successfully!')
-    log.debug('This is a debug message.')
-    log.error('This is an error message.')
+    logger = CustomLogger(__name__)
+    logger.info('This is an info message')
+    logger.error('This is an error message')
