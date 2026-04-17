@@ -1,36 +1,36 @@
-import json
+import time
+import random
+import logging
 
-def load_config(file_path):
+def perform_click(x, y):
     try:
-        with open(file_path, 'r') as file:
-            config = json.load(file)
-        return config
-    except FileNotFoundError:
-        raise FileNotFoundError(f'Config file not found: {file_path}')
-    except json.JSONDecodeError:
-        raise ValueError('Error decoding JSON from the config file')
+        if not (isinstance(x, int) and isinstance(y, int)):
+            raise ValueError('Coordinates must be integers.')
+        # Simulate mouse click at (x, y)
+        print(f'Clicking at coordinates: ({x}, {y})')
+    except ValueError as ve:
+        logging.error(f'ValueError occurred: {ve}')
+    except Exception as e:
+        logging.error(f'Unexpected error: {e}')
 
 
-def save_config(file_path, config_data):
-    with open(file_path, 'w') as file:
-        json.dump(config_data, file, indent=4)
+def random_delay(min_sec, max_sec):
+    try:
+        if min_sec < 0 or max_sec < 0:
+            raise ValueError('Delays must be non-negative.')
+        if min_sec > max_sec:
+            raise ValueError('min_sec cannot be greater than max_sec.')
+        delay = random.uniform(min_sec, max_sec)
+        time.sleep(delay)
+    except ValueError as ve:
+        logging.error(f'Delay error: {ve}')
+    except Exception as e:
+        logging.error(f'Unexpected error: {e}')
 
 
-def merge_configs(defaults, custom):
-    merged = defaults.copy()
-    merged.update(custom)
-    return merged
-
-
-def validate_click_data(data):
-    required_keys = ['click_interval', 'click_count', 'target']
-    for key in required_keys:
-        if key not in data:
-            raise KeyError(f'Missing required key: {key}')
-        if not isinstance(data[key], (int, float)):
-            raise TypeError(f'Key {key} must be an integer or float')
-    return True
-
-
-def format_click_data(data):
-    return f"Clicking {data['click_count']} times at {data['click_interval']}ms interval on {data['target']}"
+def setup_logging(log_file):
+    try:
+        logging.basicConfig(filename=log_file, level=logging.ERROR,
+                            format='%(asctime)s:%(levelname)s:%(message)s')
+    except Exception as e:
+        print(f'Failed to set up logging: {e}')
