@@ -1,37 +1,28 @@
 class AutoClickerError(Exception):
-    """Base class for exceptions in the AutoClicker module."""
-    pass
+    """Base class for all autoclicker errors."""
 
 class ConfigurationError(AutoClickerError):
-    """Raised for errors in configuration settings."""
-    def __init__(self, message):
-        self.message = message
-        super().__init__(self.message)
+    """Raised when there is a configuration error."""
+    def __init__(self, message, config_item=None):
+        self.config_item = config_item
+        super().__init__(message)
 
-class ClickRateError(AutoClickerError):
-    """Raised when click rate is invalid."""
-    def __init__(self, rate):
-        self.rate = rate
-        self.message = f"Invalid click rate: {self.rate}."
-        super().__init__(self.message)
+class ClickerDelayError(AutoClickerError):
+    """Raised when a click delay is invalid."""
+    def __init__(self, delay):
+        self.delay = delay
+        message = f'Invalid click delay: {delay}. Must be a positive number.'
+        super().__init__(message)
 
-class TimeoutError(AutoClickerError):
-    """Raised when an operation times out."""
-    def __init__(self, timeout):
-        self.timeout = timeout
-        self.message = f"Operation timed out after {self.timeout} seconds."
-        super().__init__(self.message)
+class ClickCountError(AutoClickerError):
+    """Raised when click count is invalid."""
+    def __init__(self, count):
+        self.count = count
+        message = f'Invalid click count: {count}. Must be a positive integer.'
+        super().__init__(message)
 
-class NotConfiguredError(AutoClickerError):
-    """Raised when the autoclicker is not configured properly."""
+class ClickerNotActiveError(AutoClickerError):
+    """Raised when clicker is not active."""
     def __init__(self):
-        self.message = "The AutoClicker has not been configured."
-        super().__init__(self.message)
-
-__all__ = [
-    'AutoClickerError',
-    'ConfigurationError',
-    'ClickRateError',
-    'TimeoutError',
-    'NotConfiguredError'
-]
+        message = 'Clicker must be active to perform this action.'
+        super().__init__(message)
