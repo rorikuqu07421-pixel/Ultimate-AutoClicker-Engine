@@ -1,36 +1,25 @@
 import time
 import random
-import logging
+import requests
 
-def perform_click(x, y):
-    try:
-        if not (isinstance(x, int) and isinstance(y, int)):
-            raise ValueError('Coordinates must be integers.')
-        # Simulate mouse click at (x, y)
-        print(f'Clicking at coordinates: ({x}, {y})')
-    except ValueError as ve:
-        logging.error(f'ValueError occurred: {ve}')
-    except Exception as e:
-        logging.error(f'Unexpected error: {e}')
-
-
-def random_delay(min_sec, max_sec):
-    try:
-        if min_sec < 0 or max_sec < 0:
-            raise ValueError('Delays must be non-negative.')
-        if min_sec > max_sec:
-            raise ValueError('min_sec cannot be greater than max_sec.')
-        delay = random.uniform(min_sec, max_sec)
-        time.sleep(delay)
-    except ValueError as ve:
-        logging.error(f'Delay error: {ve}')
-    except Exception as e:
-        logging.error(f'Unexpected error: {e}')
+def retry_network_operation(func, retries=3, delay=2, backoff=2):
+    for attempt in range(retries):
+        try:
+            return func()
+        except requests.exceptions.RequestException as e:
+            if attempt < retries - 1:
+                wait = delay * (backoff ** attempt)
+                print(f'Attempt {attempt + 1} failed: {e}. Retrying in {wait} seconds...')
+                time.sleep(wait)
+            else:
+                print('All attempts failed.')
+                raise
 
 
-def setup_logging(log_file):
-    try:
-        logging.basicConfig(filename=log_file, level=logging.ERROR,
-                            format='%(asctime)s:%(levelname)s:%(message)s')
-    except Exception as e:
-        print(f'Failed to set up logging: {e}')
+def fetch_data(url):
+    response = requests.get(url)
+    response.raise_for_status()
+    return response.json()
+
+# Example usage:
+# data = retry_network_operation(lambda: fetch_data('https://api.example.com/data'))
