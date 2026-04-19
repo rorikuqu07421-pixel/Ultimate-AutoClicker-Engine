@@ -1,26 +1,34 @@
-import json
 import os
+import json
 
-def load_config(file_path='config.json', default_config=None):
-    if default_config is None:
-        default_config = {
-            'click_rate': 100,
-            'duration': 10,
-            'max_clicks': 1000,
+class Config:
+    def __init__(self, config_file='config.json'):
+        self.config_file = config_file
+        self.settings = self.load_config()
+
+    def load_config(self):
+        if not os.path.exists(self.config_file):
+            default_config = self.create_default_config()
+            self.save_config(default_config)
+            return default_config
+        with open(self.config_file, 'r') as f:
+            return json.load(f)
+
+    def save_config(self, config):
+        with open(self.config_file, 'w') as f:
+            json.dump(config, f, indent=4)
+
+    def create_default_config(self):
+        return {
+            'click_interval': 0.1,
+            'max_clicks': 100,
+            'click_button': 'left',
             'enabled': True
         }
-    if not os.path.isfile(file_path):
-        save_config(file_path, default_config)
-        return default_config
-    with open(file_path, 'r') as f:
-        try:
-            user_config = json.load(f)
-            return {**default_config, **user_config}
-        except json.JSONDecodeError:
-            save_config(file_path, default_config)
-            return default_config
 
-
-def save_config(file_path, config):
-    with open(file_path, 'w') as f:
-        json.dump(config, f, indent=4)
+    def update_config(self, key, value):
+        if key in self.settings:
+            self.settings[key] = value
+            self.save_config(self.settings)
+        else:
+            raise KeyError(f'Key {key} not found in config.')
