@@ -1,40 +1,37 @@
-from typing import Callable, Optional
+from typing import List, Dict, Any
 import time
 
-class AutoClicker:
-    def __init__(self, click_interval: float) -> None:
-        """Initialize the AutoClicker with the specified click interval."
-        self.click_interval = click_interval
-        self.running = False
+def process_clicks(clicks: List[Dict[str, Any]], interval: float) -> None:
+    """Processes a list of clicks with a specified interval.
 
-    def start(self) -> None:
-        """Start the auto-clicking process."
-        self.running = True
-        print("AutoClicker started.")
-        while self.running:
-            self.perform_click()
-            time.sleep(self.click_interval)
-
-    def stop(self) -> None:
-        """Stop the auto-clicking process."
-        self.running = False
-        print("AutoClicker stopped.")
-
-    def perform_click(self) -> None:
-        """Simulate a click action."
-        print("Click!")
-
-    def set_click_action(self, click_action: Callable[[], None]) -> None:
-        """Set a custom click action to be executed."
-        self.click_action = click_action
-
-    def execute_click_action(self) -> None:
-        """Execute the predefined click action."
-        if hasattr(self, 'click_action'):
-            self.click_action()  # Execute the custom action if defined.
+    Args:
+        clicks (List[Dict[str, Any]]): A list of dictionaries where each dictionary represents a click event.
+        interval (float): Time in seconds to wait between clicks.
+    """
+    for click in clicks:
+        if 'x' in click and 'y' in click:
+            click_position(click['x'], click['y'])
+            time.sleep(interval)
         else:
-            self.perform_click()  # Fallback to default click action.
+            raise ValueError("Each click must contain 'x' and 'y' coordinates.")
 
-# Example usage:
-# auto_clicker = AutoClicker(1)
-# auto_clicker.start()  # This would start clicking every 1 second
+
+def click_position(x: int, y: int) -> None:
+    """Simulates a mouse click at a given position.
+
+    Args:
+        x (int): The x-coordinate for the click.
+        y (int): The y-coordinate for the click.
+    """
+    print(f"Clicking at position: ({x}, {y})")
+    # Here you would integrate actual mouse click functionality
+
+
+def main() -> None:
+    """Main function to simulate clicks.
+    """
+    clicks = [{'x': 100, 'y': 200}, {'x': 150, 'y': 250}]
+    process_clicks(clicks, 0.5)
+
+if __name__ == '__main__':
+    main()
