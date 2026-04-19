@@ -1,32 +1,26 @@
 import logging
+from logging.handlers import RotatingFileHandler
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('autoclicker.log'),
-        logging.StreamHandler()
-    ]
-)
-
-class AutoClickerLogger:
-    def __init__(self, name='AutoClicker'):
+class CustomLogger:
+    def __init__(self, name, log_file, max_bytes=5 * 1024 * 1024, backup_count=3):
         self.logger = logging.getLogger(name)
+        self.logger.setLevel(logging.DEBUG)
+        handler = RotatingFileHandler(log_file, maxBytes=max_bytes, backupCount=backup_count)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
 
-    def log_info(self, message):
-        self.logger.info(message)
-
-    def log_warning(self, message):
-        self.logger.warning(message)
-
-    def log_debug(self, message):
+    def debug(self, message):
         self.logger.debug(message)
 
-    def log_error(self, message):
+    def info(self, message):
+        self.logger.info(message)
+
+    def warning(self, message):
+        self.logger.warning(message)
+
+    def error(self, message):
         self.logger.error(message)
 
-    def log_critical(self, message):
+    def critical(self, message):
         self.logger.critical(message)
-
-logger = AutoClickerLogger()
-logger.log_info('AutoClicker started')
