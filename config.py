@@ -1,23 +1,17 @@
 import json
 import os
 
-def load_config(defaults_path, user_path):
-    if not os.path.exists(user_path):
-        return load_defaults(defaults_path)
-    return load_user_config(user_path)
-
-
-def load_defaults(path):
-    with open(path, 'r') as f:
-        return json.load(f)
-
-
-def load_user_config(path):
-    with open(path, 'r') as f:
-        user_config = json.load(f)
-        defaults = load_defaults('defaults.json')
-        return {**defaults, **user_config}
-
+def load_config(config_path, default_config):
+    if not os.path.exists(config_path):
+        return default_config
+    with open(config_path, 'r') as file:
+        return {**default_config, **json.load(file)}
 
 if __name__ == '__main__':
-    print(load_config('defaults.json', 'user_config.json'))
+    default_settings = {
+        'click_interval': 0.1,
+        'duration': 60,
+        'click_type': 'left'
+    }
+    config = load_config('config.json', default_settings)
+    print('Loaded Configuration:', config)
