@@ -1,35 +1,48 @@
 import time
 import threading
+import random
+import sys
 
 class AutoClicker:
-    def __init__(self, interval=0.1):
-        self.interval = interval
+    def __init__(self, delay=0.1):
+        self.delay = delay
         self.running = False
-        self.clicks = 0
 
     def start(self):
+        if self.running:
+            raise RuntimeError('AutoClicker is already running!')
         self.running = True
-        threading.Thread(target=self._run).start()
-
-    def _run(self):
-        while self.running:
-            self.perform_click()
-            time.sleep(self.interval)
-
-    def perform_click(self):
-        # Simulated click action
-        self.clicks += 1
-        print(f"Click {self.clicks}")
+        threading.Thread(target=self.click_loop).start()
 
     def stop(self):
+        if not self.running:
+            raise RuntimeError('AutoClicker is not running!')
         self.running = False
 
-    def get_clicks(self):
-        return self.clicks
+    def click_loop(self):
+        try:
+            while self.running:
+                self.perform_click()
+                time.sleep(self.delay)
+        except Exception as e:
+            print(f'Error in click loop: {e}')  
+            self.stop()
+
+    def perform_click(self):
+        # Simulating click with a print statement
+        print('Click!')
+
+    def set_delay(self, new_delay):
+        if new_delay < 0:
+            raise ValueError('Delay must be a non-negative value.')
+        self.delay = new_delay
 
 if __name__ == '__main__':
-    clicker = AutoClicker(0.05)
-    clicker.start()
-    time.sleep(1)
-    clicker.stop()
-    print(f'Total clicks: {clicker.get_clicks()}')
+    clicker = AutoClicker()
+    try:
+        clicker.start()
+        time.sleep(random.randint(1, 5))  # let it click for a while
+    except Exception as e:
+        print(f'Error: {e}')
+    finally:
+        clicker.stop()
