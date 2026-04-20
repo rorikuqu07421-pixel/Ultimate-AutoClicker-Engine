@@ -4,31 +4,27 @@ import json
 class Config:
     def __init__(self, config_file='config.json'):
         self.config_file = config_file
-        self.settings = self.load_config()
+        self.config_data = self.load_config()
 
     def load_config(self):
         if not os.path.exists(self.config_file):
-            default_config = self.create_default_config()
-            self.save_config(default_config)
-            return default_config
-        with open(self.config_file, 'r') as f:
-            return json.load(f)
+            raise FileNotFoundError(f"{self.config_file} not found")
+        with open(self.config_file, 'r') as file:
+            return json.load(file)
 
-    def save_config(self, config):
-        with open(self.config_file, 'w') as f:
-            json.dump(config, f, indent=4)
+    def get(self, key, default=None):
+        return self.config_data.get(key, default)
 
-    def create_default_config(self):
-        return {
-            'click_interval': 0.1,
-            'max_clicks': 100,
-            'click_button': 'left',
-            'enabled': True
-        }
+    def set(self, key, value):
+        self.config_data[key] = value
+        self.save_config()
 
-    def update_config(self, key, value):
-        if key in self.settings:
-            self.settings[key] = value
-            self.save_config(self.settings)
-        else:
-            raise KeyError(f'Key {key} not found in config.')
+    def save_config(self):
+        with open(self.config_file, 'w') as file:
+            json.dump(self.config_data, file, indent=4)
+
+    def reset_config(self):
+        self.config_data = {}
+        self.save_config()
+
+config = Config()
