@@ -1,32 +1,31 @@
 import json
-from typing import Any, Dict
+import os
 
-def load_clicker_data(file_path: str) -> Dict[str, Any]:
-    try:
-        with open(file_path, 'r') as file:
-            data = json.load(file)
-            validate_clicker_data(data)
-            return data
-    except FileNotFoundError:
-        raise Exception('File not found. Please check the path.')
-    except json.JSONDecodeError:
-        raise Exception('Error decoding JSON. Check file format.')
+def load_clicker_config(file_path):
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f\"Configuration file not found: {file_path}\")
+    with open(file_path, 'r') as file:
+        try:
+            config = json.load(file)
+            validate_config(config)
+            return config
+        except json.JSONDecodeError:
+            raise ValueError(f\"Invalid JSON format in configuration file: {file_path}\")
 
 
-def validate_clicker_data(data: Dict[str, Any]) -> None:
-    required_keys = ['click_interval', 'max_clicks', 'duration']
+def validate_config(config):
+    required_keys = ['click_interval', 'click_duration', 'click_count']
     for key in required_keys:
-        if key not in data:
-            raise Exception(f'Missing required key: {key}')
-    if not isinstance(data['click_interval'], (int, float)):
-        raise Exception('click_interval must be a number.')
-    if not isinstance(data['max_clicks'], int) or data['max_clicks'] < 0:
-        raise Exception('max_clicks must be a non-negative integer.')
-    if not isinstance(data['duration'], (int, float)) or data['duration'] <= 0:
-        raise Exception('duration must be a positive number.')
+        if key not in config:
+            raise KeyError(f\"Missing required configuration key: {key}\")
+    if not isinstance(config['click_interval'], (int, float)):
+        raise TypeError('click_interval must be a number')
+    if not isinstance(config['click_duration'], (int, float)):
+        raise TypeError('click_duration must be a number')
+    if not isinstance(config['click_count'], int):
+        raise TypeError('click_count must be an integer')
 
 
-def save_clicker_data(file_path: str, data: Dict[str, Any]) -> None:
-    validate_clicker_data(data)
+def save_clicker_config(file_path, config):
     with open(file_path, 'w') as file:
-        json.dump(data, file, indent=4)
+        json.dump(config, file, indent=4)
