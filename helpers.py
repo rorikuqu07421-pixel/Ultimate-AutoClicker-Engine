@@ -1,28 +1,28 @@
-import random
 import time
+import random
 
-def click_mouse(x, y, button='left'):
-    """Simulates a mouse click at (x, y) position."""
-    # Import pyautogui or any suitable library
-    import pyautogui
-    if button not in ['left', 'right']:
-        raise ValueError('Button must be left or right')
-    pyautogui.click(x, y, button=button)
+class AutoClicker:
+    def __init__(self, interval=1.0):
+        self.interval = interval
 
+    def click(self):
+        print("Mouse clicked!")  # Simulating a mouse click
 
-def random_delay(start=0.1, end=0.5):
-    """Returns a random delay between start and end seconds."""
-    return random.uniform(start, end)
+    def start_clicking(self, count):
+        for _ in range(count):
+            self.click()
+            time.sleep(self.interval)
 
+    def random_clicks(self, count):
+        for _ in range(count):
+            self.click()
+            time.sleep(random.uniform(0.1, self.interval))
 
-def perform_clicks(num_clicks, x, y, delay_range=(0.1, 0.5), button='left'):
-    """Performs multiple clicks with random delays."""
-    for _ in range(num_clicks):
-        click_mouse(x, y, button)
-        time.sleep(random_delay(*delay_range))
+    @staticmethod
+    def simulate_clicks(start_count=5, end_count=10):
+        return random.randint(start_count, end_count)
 
-
-def repeat_action(action, times):
-    """Repeats an action for a specified number of times."""
-    for _ in range(times):
-        action()
+if __name__ == '__main__':
+    ac = AutoClicker(interval=0.5)
+    click_count = ac.simulate_clicks()
+    ac.start_clicking(click_count)
