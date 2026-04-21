@@ -1,28 +1,37 @@
-import time
 import random
+import time
+import logging
 
-class AutoClicker:
-    def __init__(self, interval=1.0):
-        self.interval = interval
+class ClickerError(Exception):
+    pass
+
+class Clicker:
+    def __init__(self, delay: float = 0.1, click_count: int = 10):
+        if delay <= 0:
+            raise ClickerError("Delay must be greater than 0")
+        if click_count <= 0:
+            raise ClickerError("Click count must be greater than 0")
+        self.delay = delay
+        self.click_count = click_count
+
+    def perform_clicks(self):
+        try:
+            for _ in range(self.click_count):
+                self.click()
+                time.sleep(self.delay)
+        except Exception as e:
+            logging.error(f"An error occurred during clicking: {e}")
 
     def click(self):
-        print("Mouse clicked!")  # Simulating a mouse click
-
-    def start_clicking(self, count):
-        for _ in range(count):
-            self.click()
-            time.sleep(self.interval)
-
-    def random_clicks(self, count):
-        for _ in range(count):
-            self.click()
-            time.sleep(random.uniform(0.1, self.interval))
-
-    @staticmethod
-    def simulate_clicks(start_count=5, end_count=10):
-        return random.randint(start_count, end_count)
+        if random.random() < 0.05:
+            raise ClickerError("Failed to perform click due to random error")
+        print("Click!")
 
 if __name__ == '__main__':
-    ac = AutoClicker(interval=0.5)
-    click_count = ac.simulate_clicks()
-    ac.start_clicking(click_count)
+    try:
+        my_clicker = Clicker(delay=0.1, click_count=5)
+        my_clicker.perform_clicks()
+    except ClickerError as e:
+        logging.error(f"Clicker initialization failed: {e}")
+    except Exception as general_error:
+        logging.error(f"An unexpected error occurred: {general_error}")
