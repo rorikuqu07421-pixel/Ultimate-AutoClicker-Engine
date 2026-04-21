@@ -1,28 +1,35 @@
 class AutoClickerError(Exception):
-    """Base class for all autoclicker errors."""
+    pass
+
+class InvalidClickRateError(AutoClickerError):
+    def __init__(self, rate):
+        self.rate = rate
+        super().__init__(f"Invalid click rate: {rate}. Must be a positive number.")
+
+class FrequencyOutOfBoundsError(AutoClickerError):
+    def __init__(self, frequency):
+        self.frequency = frequency
+        super().__init__(f"Frequency '{frequency}' is out of allowed bounds.")
 
 class ConfigurationError(AutoClickerError):
-    """Raised when there is a configuration error."""
-    def __init__(self, message, config_item=None):
-        self.config_item = config_item
+    def __init__(self, message):
         super().__init__(message)
 
-class ClickerDelayError(AutoClickerError):
-    """Raised when a click delay is invalid."""
-    def __init__(self, delay):
-        self.delay = delay
-        message = f'Invalid click delay: {delay}. Must be a positive number.'
-        super().__init__(message)
 
-class ClickCountError(AutoClickerError):
-    """Raised when click count is invalid."""
-    def __init__(self, count):
-        self.count = count
-        message = f'Invalid click count: {count}. Must be a positive integer.'
-        super().__init__(message)
+def validate_click_rate(rate):
+    if not isinstance(rate, (int, float)) or rate <= 0:
+        raise InvalidClickRateError(rate)
 
-class ClickerNotActiveError(AutoClickerError):
-    """Raised when clicker is not active."""
-    def __init__(self):
-        message = 'Clicker must be active to perform this action.'
-        super().__init__(message)
+
+def validate_frequency(frequency, min_freq=1, max_freq=100):
+    if frequency < min_freq or frequency > max_freq:
+        raise FrequencyOutOfBoundsError(frequency)
+
+
+def validate_configuration(config):
+    required_keys = ['click_rate', 'frequency']
+    for key in required_keys:
+        if key not in config:
+            raise ConfigurationError(f'Missing required configuration key: {key}')
+    validate_click_rate(config['click_rate'])
+    validate_frequency(config['frequency'])
