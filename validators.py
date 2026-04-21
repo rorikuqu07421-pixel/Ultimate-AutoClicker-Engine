@@ -1,21 +1,26 @@
 import re
 
-def validate_click_interval(interval):
-    if not isinstance(interval, (int, float)):
-        raise ValueError('Interval must be a number.')
-    if interval <= 0:
-        raise ValueError('Interval must be greater than zero.')
+class InputValidator:
+    @staticmethod
+    def is_valid_click_interval(interval):
+        if isinstance(interval, (int, float)) and interval > 0:
+            return True
+        raise ValueError("Click interval must be a positive number.")
 
+    @staticmethod
+    def is_valid_click_count(count):
+        if isinstance(count, int) and count > 0:
+            return True
+        raise ValueError("Click count must be a positive integer.")
 
-def validate_click_count(count):
-    if not isinstance(count, int):
-        raise ValueError('Click count must be an integer.')
-    if count < 1:
-        raise ValueError('Click count must be at least 1.')
+    @staticmethod
+    def is_valid_key_sequence(sequence):
+        if isinstance(sequence, str) and re.match(r'^[a-zA-Z0-9 ]+$', sequence):
+            return True
+        raise ValueError("Key sequence must be a valid alphanumeric string.")
 
-
-def validate_coordinates(x, y):
-    if not (isinstance(x, int) and isinstance(y, int)):
-        raise ValueError('Coordinates must be integers.')
-    if not (0 <= x <= 1920 and 0 <= y <= 1080):
-        raise ValueError('Coordinates must be within screen boundaries.')
+    @staticmethod
+    def validate_settings(interval, count, sequence):
+        return (InputValidator.is_valid_click_interval(interval), 
+                InputValidator.is_valid_click_count(count), 
+                InputValidator.is_valid_key_sequence(sequence))
