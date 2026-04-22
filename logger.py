@@ -1,31 +1,27 @@
 import logging
 
-class Logger:
-    def __init__(self, name='UltimateAutoClicker', level=logging.INFO):
-        self.logger = logging.getLogger(name)
-        self.logger.setLevel(level)
-        ch = logging.StreamHandler()
-        ch.setLevel(level)
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-        ch.setFormatter(formatter)
-        self.logger.addHandler(ch)
+# Configuring the logger
+logger = logging.getLogger('AutoClickerLogger')
+logger.setLevel(logging.DEBUG)
 
-    def debug(self, msg):
-        self.logger.debug(msg)
+handler = logging.FileHandler('autoclicker.log')
+handler.setLevel(logging.DEBUG)
 
-    def info(self, msg):
-        self.logger.info(msg)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
 
-    def warning(self, msg):
-        self.logger.warning(msg)
+logger.addHandler(handler)
 
-    def error(self, msg):
-        self.logger.error(msg)
+def log_click_event(click_data):
+    if not isinstance(click_data, dict):
+        logger.error('Invalid click data format')
+        return
+    logger.info('Click event recorded: %s', click_data)
 
-    def critical(self, msg):
-        self.logger.critical(msg)
 
-# Usage example:
-if __name__ == '__main__':
-    log = Logger()
-    log.info('AutoClicker started successfully!')
+def log_error(error_message):
+    logger.error('Error occurred: %s', error_message)
+
+
+def log_info(info_message):
+    logger.info('Info: %s', info_message)
