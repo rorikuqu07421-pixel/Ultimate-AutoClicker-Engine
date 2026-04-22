@@ -1,31 +1,30 @@
-import json
-import os
+import time
+import random
 
-def load_clicker_config(file_path):
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f\"Configuration file not found: {file_path}\")
-    with open(file_path, 'r') as file:
-        try:
-            config = json.load(file)
-            validate_config(config)
-            return config
-        except json.JSONDecodeError:
-            raise ValueError(f\"Invalid JSON format in configuration file: {file_path}\")
+class ClickerError(Exception):
+    pass
 
+class InvalidClickParameters(ClickerError):
+    pass
 
-def validate_config(config):
-    required_keys = ['click_interval', 'click_duration', 'click_count']
-    for key in required_keys:
-        if key not in config:
-            raise KeyError(f\"Missing required configuration key: {key}\")
-    if not isinstance(config['click_interval'], (int, float)):
-        raise TypeError('click_interval must be a number')
-    if not isinstance(config['click_duration'], (int, float)):
-        raise TypeError('click_duration must be a number')
-    if not isinstance(config['click_count'], int):
-        raise TypeError('click_count must be an integer')
+class ClickLimitExceeded(ClickerError):
+    pass
+
+def perform_click(delay: float, click_limit: int, click_count: int) -> None:
+    if delay < 0:
+        raise InvalidClickParameters('Delay must be non-negative')
+    if click_limit <= 0:
+        raise InvalidClickParameters('Click limit must be a positive integer')
+    if click_count > click_limit:
+        raise ClickLimitExceeded('Click count exceeds defined limit')
+
+    for _ in range(click_count):
+        print('Click!')  # Replace this with actual click event logic
+        time.sleep(delay)
 
 
-def save_clicker_config(file_path, config):
-    with open(file_path, 'w') as file:
-        json.dump(config, file, indent=4)
+if __name__ == '__main__':
+    try:
+        perform_click(0.1, 10, 5)  # Example values
+    except ClickerError as e:
+        print(f'Error: {e}')
