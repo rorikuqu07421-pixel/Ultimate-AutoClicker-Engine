@@ -1,34 +1,36 @@
 import time
-import threading
+import requests
 
-class AutoClicker:
-    def __init__(self, interval=0.1):
-        self.interval = interval
-        self.clicking = False
-        self.thread = None
+class NetworkError(Exception):
+    pass
 
-    def start_clicking(self):
-        if not self.clicking:
-            self.clicking = True
-            self.thread = threading.Thread(target=self._click_loop)
-            self.thread.start()
+def retry_request(url, method='GET', retries=3, delay=2, params=None):
+    attempts = 0
+    while attempts < retries:
+        try:
+            if method.upper() == 'GET':
+                response = requests.get(url, params=params)
+            elif method.upper() == 'POST':
+                response = requests.post(url, json=params)
+            else:
+                raise ValueError('Unsupported method: {}'.format(method))
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.HTTPError as e:
+            print(f'HTTP error: {e}')
+            attempts += 1
+            time.sleep(delay)
+        except requests.exceptions.RequestException as e:
+            print(f'Network error: {e}')
+            attempts += 1
+            time.sleep(delay)
+    raise NetworkError(f'Failed to connect after {retries} attempts')
 
-    def stop_clicking(self):
-        if self.clicking:
-            self.clicking = False
-            self.thread.join()
-
-    def _click_loop(self):
-        while self.clicking:
-            self._perform_click()
-            time.sleep(self.interval)
-
-    def _perform_click(self):
-        # Simulate a click event
-        print('Click!')
-
+# Example of usage
 if __name__ == '__main__':
-    clicker = AutoClicker(interval=0.05)
-    clicker.start_clicking()
-    time.sleep(1)
-    clicker.stop_clicking()
+    url = 'https://api.example.com/data'
+    try:
+        data = retry_request(url, retries=5)
+        print(data)
+    except NetworkError as e:
+        print(e)
