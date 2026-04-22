@@ -1,30 +1,37 @@
 import time
 import random
 
-class ClickerError(Exception):
-    pass
-
-class InvalidClickParameters(ClickerError):
-    pass
-
-class ClickLimitExceeded(ClickerError):
-    pass
-
-def perform_click(delay: float, click_limit: int, click_count: int) -> None:
-    if delay < 0:
-        raise InvalidClickParameters('Delay must be non-negative')
-    if click_limit <= 0:
-        raise InvalidClickParameters('Click limit must be a positive integer')
-    if click_count > click_limit:
-        raise ClickLimitExceeded('Click count exceeds defined limit')
-
-    for _ in range(click_count):
-        print('Click!')  # Replace this with actual click event logic
-        time.sleep(delay)
-
-
-if __name__ == '__main__':
+def safe_divide(numerator, denominator):
     try:
-        perform_click(0.1, 10, 5)  # Example values
-    except ClickerError as e:
-        print(f'Error: {e}')
+        return numerator / denominator
+    except ZeroDivisionError:
+        print("Error: Division by zero!")
+        return None
+    except TypeError:
+        print("Error: Invalid type for division!")
+        return None
+
+
+def wait_random(seconds_min, seconds_max):
+    try:
+        if seconds_min < 0 or seconds_max < 0:
+            raise ValueError("Wait times must be non-negative.")
+        if seconds_min > seconds_max:
+            raise ValueError("Minimum time cannot exceed maximum time.")
+        time_to_wait = random.uniform(seconds_min, seconds_max)
+        time.sleep(time_to_wait)
+    except ValueError as ve:
+        print(f"Value error: {ve}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+
+
+def validate_click_position(position):
+    if not isinstance(position, tuple) or len(position) != 2:
+        print("Error: Position must be a tuple of (x, y).")
+        return False
+    x, y = position
+    if not (isinstance(x, int) and isinstance(y, int)):
+        print("Error: x and y must be integers.")
+        return False
+    return True
