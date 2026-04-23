@@ -1,33 +1,27 @@
-import json
-import os
+import time
+import random
+import requests
 
-def load_config(file_path):
-    if not os.path.isfile(file_path):
-        raise FileNotFoundError(f"Configuration file not found: {file_path}")
-    with open(file_path, 'r') as file:
-        return json.load(file)
+def retry_request(url, max_retries=5, wait_time=2):
+    attempt = 0
+    while attempt < max_retries:
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.HTTPError as e:
+            print(f'HTTP error occurred: {e}')
+            attempt += 1
+            time.sleep(wait_time)
+        except requests.exceptions.RequestException as e:
+            print(f'Network error occurred: {e}')
+            return None
+    print('Max retries exceeded')
+    return None
 
-
-def save_config(config, file_path):
-    with open(file_path, 'w') as file:
-        json.dump(config, file, indent=4)
-
-
-def update_config(config, updates):
-    config.update(updates)
-    return config
-
-
-def validate_config(config):
-    required_keys = ['click_interval', 'max_clicks', 'enabled']
-    for key in required_keys:
-        if key not in config:
-            raise ValueError(f'Missing required config key: {key}')  
-    if not isinstance(config['click_interval'], (int, float)) or config['click_interval'] <= 0:
-        raise ValueError('click_interval must be a positive number')
-    if not isinstance(config['max_clicks'], int) or config['max_clicks'] < 0:
-        raise ValueError('max_clicks must be a non-negative integer')
-    if not isinstance(config['enabled'], bool):
-        raise ValueError('enabled must be a boolean value')
-
-    return True
+if __name__ == '__main__':
+    result = retry_request('https://api.example.com/data')
+    if result:
+        print('Data received:', result)
+    else:
+        print('Failed to retrieve data')
