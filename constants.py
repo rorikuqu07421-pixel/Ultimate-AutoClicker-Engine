@@ -1,27 +1,36 @@
-from typing import Final
+BUTTON_CLICK_INTERVAL = 0.01
+MAX_AUTO_CLICKS = 10000
+DEFAULT_DELAY = 100
 
-# Click intervals in milliseconds
-CLICK_INTERVAL: Final[int] = 100
-DOUBLE_CLICK_INTERVAL: Final[int] = 200
+# Mouse button types
+LEFT_BUTTON = 'left'
+RIGHT_BUTTON = 'right'
+MIDDLE_BUTTON = 'middle'
 
-# Mouse button identifiers
-LEFT_BUTTON: Final[int] = 1
-RIGHT_BUTTON: Final[int] = 2
-MIDDLE_BUTTON: Final[int] = 3
+# Window positions
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
 
-# Click types
-class ClickType:
-    SINGLE: Final[str] = 'single'
-    DOUBLE: Final[str] = 'double'
+# Log level constants
+LOG_LEVEL_DEBUG = 10
+LOG_LEVEL_INFO = 20
+LOG_LEVEL_WARNING = 30
+LOG_LEVEL_ERROR = 40
+LOG_LEVEL_CRITICAL = 50
 
-# Default configuration
-DEFAULT_CONFIG: Final[dict] = {
-    'click_type': ClickType.SINGLE,
-    'interval': CLICK_INTERVAL,
-    'button': LEFT_BUTTON
-}
+# Error messages
+ERROR_INVALID_POSITION = 'Invalid mouse position'
+ERROR_EXCEEDS_MAX_CLICKS = 'Exceeded maximum click limit'
 
-def get_config() -> dict:
-    """Returns the default click configuration."""
-    return DEFAULT_CONFIG
+# Click modes
+SINGLE_CLICK = 'single'
+DOUBLE_CLICK = 'double'
 
+# Autoclicker states
+STATE_RUNNING = 'running'
+STATE_STOPPED = 'stopped'
+STATE_PAUSED = 'paused'
+
+# Misc constants
+VERSION = '1.0.0'
+AUTHOR = 'Ultimate AutoClicker Team'
