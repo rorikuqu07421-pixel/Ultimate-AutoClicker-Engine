@@ -1,26 +1,41 @@
-import re
+from typing import Tuple, Union
 
-class InputValidator:
-    @staticmethod
-    def is_valid_click_interval(interval):
-        if isinstance(interval, (int, float)) and interval > 0:
-            return True
-        raise ValueError("Click interval must be a positive number.")
 
-    @staticmethod
-    def is_valid_click_count(count):
-        if isinstance(count, int) and count > 0:
-            return True
-        raise ValueError("Click count must be a positive integer.")
+def validate_coordinates(coordinates: Tuple[int, int]) -> bool:
+    """
+    Validates if the given coordinates are within the bounds of the screen.
 
-    @staticmethod
-    def is_valid_key_sequence(sequence):
-        if isinstance(sequence, str) and re.match(r'^[a-zA-Z0-9 ]+$', sequence):
-            return True
-        raise ValueError("Key sequence must be a valid alphanumeric string.")
+    Args:
+        coordinates (Tuple[int, int]): A tuple containing x and y coordinates.
 
-    @staticmethod
-    def validate_settings(interval, count, sequence):
-        return (InputValidator.is_valid_click_interval(interval), 
-                InputValidator.is_valid_click_count(count), 
-                InputValidator.is_valid_key_sequence(sequence))
+    Returns:
+        bool: True if coordinates are valid, False otherwise.
+    """
+    x, y = coordinates
+    return 0 <= x <= 1920 and 0 <= y <= 1080
+
+
+def validate_click_frequency(frequency: Union[int, float]) -> bool:
+    """
+    Validates whether the click frequency is a positive number.
+
+    Args:
+        frequency (Union[int, float]): The click frequency to validate.
+
+    Returns:
+        bool: True if frequency is positive, False otherwise.
+    """
+    return isinstance(frequency, (int, float)) and frequency > 0
+
+
+def validate_delay(delay: Union[int, float]) -> bool:
+    """
+    Validates whether the delay is a non-negative number.
+
+    Args:
+        delay (Union[int, float]): The delay to validate.
+
+    Returns:
+        bool: True if delay is non-negative, False otherwise.
+    """
+    return isinstance(delay, (int, float)) and delay >= 0
