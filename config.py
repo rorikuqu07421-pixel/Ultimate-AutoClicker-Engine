@@ -1,30 +1,29 @@
-import os
 import json
 
-class Config:
-    def __init__(self, config_file='config.json'):
-        self.config_file = config_file
-        self.config_data = self.load_config()
+DEFAULT_CONFIG = {
+    'click_interval': 0.1,
+    'max_clicks': 100,
+    'click_type': 'left',
+    'click_position': [0, 0],
+    'enabled': True
+}
+
+class ConfigLoader:
+    def __init__(self, filename='config.json'):
+        self.filename = filename
+        self.config = self.load_config()
 
     def load_config(self):
-        if not os.path.exists(self.config_file):
-            raise FileNotFoundError(f"{self.config_file} not found")
-        with open(self.config_file, 'r') as file:
-            return json.load(file)
+        try:
+            with open(self.filename, 'r') as config_file:
+                user_config = json.load(config_file)
+                return {**DEFAULT_CONFIG, **user_config}
+        except FileNotFoundError:
+            return DEFAULT_CONFIG
+        except json.JSONDecodeError:
+            print('Error loading config, using defaults.')
+            return DEFAULT_CONFIG
 
-    def get(self, key, default=None):
-        return self.config_data.get(key, default)
-
-    def set(self, key, value):
-        self.config_data[key] = value
-        self.save_config()
-
-    def save_config(self):
-        with open(self.config_file, 'w') as file:
-            json.dump(self.config_data, file, indent=4)
-
-    def reset_config(self):
-        self.config_data = {}
-        self.save_config()
-
-config = Config()
+if __name__ == '__main__':
+    loader = ConfigLoader()
+    print(loader.config)
