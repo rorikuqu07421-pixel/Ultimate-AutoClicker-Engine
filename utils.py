@@ -2,26 +2,21 @@ import time
 import random
 import requests
 
-def retry_request(url, max_retries=5, wait_time=2):
-    attempt = 0
-    while attempt < max_retries:
+class NetworkError(Exception):
+    pass
+
+def retry_request(url, retries=3, delay=2):
+    for attempt in range(retries):
         try:
             response = requests.get(url)
             response.raise_for_status()
             return response.json()
-        except requests.exceptions.HTTPError as e:
-            print(f'HTTP error occurred: {e}')
-            attempt += 1
-            time.sleep(wait_time)
-        except requests.exceptions.RequestException as e:
-            print(f'Network error occurred: {e}')
-            return None
-    print('Max retries exceeded')
+        except requests.exceptions.HTTPError as err:
+            print(f"Attempt {attempt + 1} failed: {err}")
+            if attempt < retries - 1:
+                wait_time = delay * (2 ** attempt) + random.uniform(0, 1)
+                print(f"Retrying in {wait_time:.2f} seconds...")
+                time.sleep(wait_time)
+            else:
+                raise NetworkError(f"Failed to retrieve data after {retries} attempts")
     return None
-
-if __name__ == '__main__':
-    result = retry_request('https://api.example.com/data')
-    if result:
-        print('Data received:', result)
-    else:
-        print('Failed to retrieve data')
