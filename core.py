@@ -1,36 +1,48 @@
+import json
 import time
-import requests
+import random
+from threading import Thread
 
-class NetworkError(Exception):
-    pass
+class AutoClicker:
+    def __init__(self, click_interval=0.1, duration=10):
+        self.click_interval = click_interval
+        self.duration = duration
+        self.running = False
 
-def retry_request(url, method='GET', retries=3, delay=2, params=None):
-    attempts = 0
-    while attempts < retries:
-        try:
-            if method.upper() == 'GET':
-                response = requests.get(url, params=params)
-            elif method.upper() == 'POST':
-                response = requests.post(url, json=params)
-            else:
-                raise ValueError('Unsupported method: {}'.format(method))
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.HTTPError as e:
-            print(f'HTTP error: {e}')
-            attempts += 1
-            time.sleep(delay)
-        except requests.exceptions.RequestException as e:
-            print(f'Network error: {e}')
-            attempts += 1
-            time.sleep(delay)
-    raise NetworkError(f'Failed to connect after {retries} attempts')
+    def start(self):
+        self.running = True
+        click_thread = Thread(target=self.click)
+        click_thread.start()
 
-# Example of usage
+    def click(self):
+        end_time = time.time() + self.duration
+        while self.running and time.time() < end_time:
+            self.perform_click()
+            time.sleep(self.click_interval)
+
+    def perform_click(self):
+        click_position = (random.randint(0, 1920), random.randint(0, 1080))
+        print(f"Clicking at {click_position}")  # Simulate a mouse click
+
+    def stop(self):
+        self.running = False
+
+    def save_state(self, filename):
+        state_data = {'click_interval': self.click_interval, 'duration': self.duration}
+        with open(filename, 'w') as file:
+            json.dump(state_data, file)
+
+    @staticmethod
+    def load_state(filename):
+        with open(filename, 'r') as file:
+            state_data = json.load(file)
+        return state_data
+
 if __name__ == '__main__':
-    url = 'https://api.example.com/data'
-    try:
-        data = retry_request(url, retries=5)
-        print(data)
-    except NetworkError as e:
-        print(e)
+    clicker = AutoClicker(0.5, 5)
+    clicker.start()
+    time.sleep(6)  # Let it click for 6 seconds
+    clicker.stop()  
+    clicker.save_state('clicker_state.json')  
+    loaded_state = clicker.load_state('clicker_state.json')
+    print(f"Loaded state: {loaded_state}")
