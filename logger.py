@@ -1,47 +1,13 @@
 import logging
+from logging.handlers import RotatingFileHandler
 
-logger = logging.getLogger("UltimateAutoClicker")
-logger.setLevel(logging.DEBUG)
+def setup_logger(log_file='app.log', max_bytes=5*1024*1024, backup_count=3):
+    logger = logging.getLogger('UltimateAutoClicker')
+    logger.setLevel(logging.INFO)
+    handler = RotatingFileHandler(log_file, maxBytes=max_bytes, backupCount=backup_count)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
 
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
-
-file_handler = logging.FileHandler("app.log", mode='a')
-file_handler.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-console_handler.setFormatter(formatter)
-file_handler.setFormatter(formatter)
-
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
-
-
-def log_info(message: str) -> None:
-    """
-    Logs an informational message.
-    
-    Args:
-        message (str): The message to log.
-    """
-    logger.info(message)
-
-
-def log_error(message: str) -> None:
-    """
-    Logs an error message.
-    
-    Args:
-        message (str): The message to log.
-    """
-    logger.error(message)
-
-
-def log_debug(message: str) -> None:
-    """
-    Logs a debug message.
-    
-    Args:
-        message (str): The message to log.
-    """
-    logger.debug(message)
+logger = setup_logger()
