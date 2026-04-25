@@ -1,16 +1,17 @@
-# Ultimate-AutoClicker-Engine
+# Ultimate AutoClicker Engine
 
-The Ultimate AutoClicker Engine is a powerful and versatile autoclicking tool built in Python, designed for seamless automation tasks. Whether you're looking to enhance your productivity in repetitive clicking tasks or automate gameplay actions, this engine provides an easy-to-use yet robust solution.
+The Ultimate AutoClicker Engine is a powerful yet user-friendly autoclicking tool built in Python, designed for both casual users and developers who want to automate repetitive mouse clicks. With its flexibility and robust features, you can easily tailor the clicking behavior to your specific needs.
 
 ## Features
-- **Custom Click Intervals**: Set precise click intervals ranging from milliseconds to seconds, allowing for tailored automation based on task requirements.
-- **Multi-Click Support**: Configure multiple clicking patterns, including single, double, and right-clicks, for a diverse range of applications.
-- **User-Friendly Interface**: Intuitive command-line interface that enables quick setup and operation without requiring extensive programming knowledge.
-- **Hotkey Integration**: Assign and use keyboard shortcuts to start, stop, and manage clicking sessions effectively.
+
+- **Configurable Click Rates**: Set custom intervals between clicks ranging from milliseconds to seconds, allowing for precise automation.
+- **Multi-Target Support**: Click at multiple locations on the screen, enabling complex automation tasks across different applications.
+- **Hotkey Activation**: Start and stop clicking with customizable keyboard shortcuts for seamless control without interrupting your workflow.
+- **User-Friendly Interface**: Includes a simple command-line interface (CLI) to get you up and running in no time, without the need for complex setup.
 
 ## Installation
 
-To install the Ultimate AutoClicker Engine, ensure you have Python 3.6 or later. You can clone the repository and install the required dependencies using pip:
+To install the Ultimate AutoClicker Engine, ensure you have Python 3.x installed on your machine. Then, clone this repository and install the required dependencies using pip:
 
 ```bash
 git clone https://github.com/Developer/Ultimate-AutoClicker-Engine.git
@@ -20,16 +21,16 @@ pip install -r requirements.txt
 
 ## Basic Usage Example
 
-After installation, you can quickly start the autoclicker using the following command:
+Once installed, you can start the autoclicker with the following command:
 
 ```bash
-python autoclicker.py --clicks 10 --interval 0.1
+python autoclicker.py --click-rate 100 --location 300,400
 ```
 
-This command initiates the autoclicker to perform 10 clicks with an interval of 0.1 seconds between each click. Customize the `--clicks` and `--interval` parameters as needed.
+In this example, the autoclicker will click at screen coordinates (300, 400) every 100 milliseconds. To stop the autoclicker, simply press the configured hotkey (default is 'Esc').
 
 ## License
 
 ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-Feel free to contribute to this project or open issues for enhancements. Happy clicking!
+For more detailed documentation and advanced configuration options, please refer to the Wiki section of the repository. Your feedback and contributions are greatly appreciated!
