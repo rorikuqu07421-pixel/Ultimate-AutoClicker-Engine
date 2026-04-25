@@ -1,30 +1,37 @@
+import requests
 import time
-import threading
+import json
 
-class AutoClicker:
-    def __init__(self, interval=0.1):
-        self.interval = interval
-        self.running = False
+class NetworkError(Exception):
+    pass
 
-    def start(self):
-        if not self.running:
-            self.running = True
-            threading.Thread(target=self._run).start()
+class NetworkOperations:
+    def __init__(self, max_retries=3, backoff_factor=1):
+        self.max_retries = max_retries
+        self.backoff_factor = backoff_factor
 
-    def _run(self):
-        while self.running:
-            self.click()
-            time.sleep(self.interval)
+    def _retry_request(self, url, method='GET', **kwargs):
+        retries = 0
+        while retries < self.max_retries:
+            try:
+                response = requests.request(method, url, **kwargs)
+                response.raise_for_status()
+                return response.json() if response.content else None
+            except requests.RequestException as e:
+                retries += 1
+                if retries == self.max_retries:
+                    raise NetworkError(f'Failed to fetch {url} after {retries} attempts')
+                wait_time = self.backoff_factor * (2 ** (retries - 1))
+                time.sleep(wait_time)
+                print(f'Retrying {url}... (Attempt: {retries}) Error: {e}')  
 
-    def stop(self):
-        self.running = False
-
-    def click(self):
-        # Simulating a click action
-        print("Click!")
+    def fetch_data(self, url):
+        return self._retry_request(url)
 
 if __name__ == '__main__':
-    auto_clicker = AutoClicker(interval=0.5)
-    auto_clicker.start()
-    time.sleep(5)
-    auto_clicker.stop()
+    network_ops = NetworkOperations()
+    try:
+        data = network_ops.fetch_data('https://api.example.com/data')
+        print(json.dumps(data, indent=2))
+    except NetworkError as e:
+        print(e)
