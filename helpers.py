@@ -1,22 +1,43 @@
-import time
-import random
+from typing import List, Dict, Any
 
-def validate_input(user_input, valid_range):
-    if not isinstance(user_input, (int, float)):
-        raise ValueError('Input must be a number')
-    if not (valid_range[0] <= user_input <= valid_range[1]):
-        raise ValueError(f'Input must be between {valid_range[0]} and {valid_range[1]}')
 
-def auto_clicker_loop(click_interval, duration):
-    validate_input(click_interval, (0.01, 5))
-    validate_input(duration, (1, 3600))
-    end_time = time.time() + duration
-    while time.time() < end_time:
-        print('Click!')  # Simulate click action
-        time.sleep(click_interval)
-        
-if __name__ == '__main__':
-    try:
-        auto_clicker_loop(0.5, 10)
-    except ValueError as e:
-        print(f'Error: {e}')
+def click_with_delay(clicks: int, delay: float) -> None:
+    """
+    Simulate a series of clicks with a specified delay.
+
+    Args:
+        clicks (int): The number of clicks to simulate.
+        delay (float): The time in seconds to wait between clicks.
+    """
+    import time
+    for _ in range(clicks):
+        print("Click!")  # Placeholder for actual click action
+        time.sleep(delay)
+
+
+def create_click_config(clicks: List[int], delays: List[float]) -> List[Dict[str, Any]]:
+    """
+    Create a list of click configurations.
+
+    Args:
+        clicks (List[int]): A list of click counts.
+        delays (List[float]): A list of corresponding delays.
+
+    Returns:
+        List[Dict[str, Any]]: A list of dictionaries with click and delay configurations.
+    """
+    return [{"clicks": c, "delay": d} for c, d in zip(clicks, delays)]
+
+
+def validate_clicks_and_delays(clicks: int, delay: float) -> bool:
+    """
+    Validate the number of clicks and delay.
+
+    Args:
+        clicks (int): The number of clicks to validate.
+        delay (float): The delay value to validate.
+
+    Returns:
+        bool: True if valid, otherwise False.
+    """
+    return clicks > 0 and delay > 0.0
