@@ -1,27 +1,32 @@
 class AutoClickerError(Exception):
-    """Base class for all exceptions raised by the autoclicker."""
+    """Base class for all autoclicker exceptions."""
     pass
 
+class ConfigurationError(AutoClickerError):
+    """Exception raised for errors in the configuration."""
+    def __init__(self, message):
+        super().__init__(message)
+
+class ClickTimeoutError(AutoClickerError):
+    """Exception raised for click timeout issues."""
+    def __init__(self, timeout):
+        self.timeout = timeout
+        super().__init__(f"Click operation timed out after {timeout} seconds.")
+
+class InvalidClickPatternError(AutoClickerError):
+    """Exception raised for invalid click patterns."""
+    def __init__(self, pattern):
+        self.pattern = pattern
+        super().__init__(f"Invalid click pattern: {pattern}")
+
+class OverloadError(AutoClickerError):
+    """Exception raised when system overload occurs."""
+    def __init__(self, load):
+        self.load = load
+        super().__init__(f"System is overloaded with load: {load}")
+
 class ClickRateError(AutoClickerError):
-    """Raised when the click rate is invalid."""
+    """Exception raised for errors in click rate."""
     def __init__(self, rate):
         self.rate = rate
-        super().__init__(f'Invalid click rate: {rate}')
-
-class ConfigurationError(AutoClickerError):
-    """Raised when there's a configuration issue."""
-    def __init__(self, message):
-        self.message = message
-        super().__init__(f'Configuration error: {message}')
-
-class ClickLimitExceeded(AutoClickerError):
-    """Raised when click limit is exceeded."""
-    def __init__(self, limit):
-        self.limit = limit
-        super().__init__(f'Click limit exceeded: {limit}')
-
-class InvalidMacroError(AutoClickerError):
-    """Raised for invalid macro actions."""
-    def __init__(self, action):
-        self.action = action
-        super().__init__(f'Invalid macro action: {action}')
+        super().__init__(f"Invalid click rate: {rate}")
