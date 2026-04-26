@@ -1,48 +1,35 @@
-import json
 import time
-import random
-from threading import Thread
+import threading
 
 class AutoClicker:
-    def __init__(self, click_interval=0.1, duration=10):
-        self.click_interval = click_interval
-        self.duration = duration
+    def __init__(self, interval=0.1):
+        self.interval = interval
         self.running = False
+        self.click_thread = None
 
     def start(self):
-        self.running = True
-        click_thread = Thread(target=self.click)
-        click_thread.start()
+        if not self.running:
+            self.running = True
+            self.click_thread = threading.Thread(target=self._click)
+            self.click_thread.start()
 
-    def click(self):
-        end_time = time.time() + self.duration
-        while self.running and time.time() < end_time:
+    def _click(self):
+        while self.running:
             self.perform_click()
-            time.sleep(self.click_interval)
-
-    def perform_click(self):
-        click_position = (random.randint(0, 1920), random.randint(0, 1080))
-        print(f"Clicking at {click_position}")  # Simulate a mouse click
+            time.sleep(self.interval)
 
     def stop(self):
         self.running = False
+        if self.click_thread:
+            self.click_thread.join()
 
-    def save_state(self, filename):
-        state_data = {'click_interval': self.click_interval, 'duration': self.duration}
-        with open(filename, 'w') as file:
-            json.dump(state_data, file)
-
-    @staticmethod
-    def load_state(filename):
-        with open(filename, 'r') as file:
-            state_data = json.load(file)
-        return state_data
-
+    def perform_click(self):
+        # Here, we would place the actual clicking logic
+        print('Click!')  # Placeholder for actual click action
+    
+# Example usage
 if __name__ == '__main__':
-    clicker = AutoClicker(0.5, 5)
-    clicker.start()
-    time.sleep(6)  # Let it click for 6 seconds
-    clicker.stop()  
-    clicker.save_state('clicker_state.json')  
-    loaded_state = clicker.load_state('clicker_state.json')
-    print(f"Loaded state: {loaded_state}")
+    autoclicker = AutoClicker(interval=0.05)
+    autoclicker.start()
+    time.sleep(1)  # Let it click for a second
+    autoclicker.stop()
