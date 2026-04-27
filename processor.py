@@ -1,37 +1,31 @@
-import requests
-import time
 import json
 
-class NetworkError(Exception):
-    pass
+class AutoClickerDataProcessor:
+    def __init__(self, data):
+        self.data = data
 
-class NetworkOperations:
-    def __init__(self, max_retries=3, backoff_factor=1):
-        self.max_retries = max_retries
-        self.backoff_factor = backoff_factor
+    def filter_by_threshold(self, threshold):
+        return [entry for entry in self.data if entry['clicks'] >= threshold]
 
-    def _retry_request(self, url, method='GET', **kwargs):
-        retries = 0
-        while retries < self.max_retries:
-            try:
-                response = requests.request(method, url, **kwargs)
-                response.raise_for_status()
-                return response.json() if response.content else None
-            except requests.RequestException as e:
-                retries += 1
-                if retries == self.max_retries:
-                    raise NetworkError(f'Failed to fetch {url} after {retries} attempts')
-                wait_time = self.backoff_factor * (2 ** (retries - 1))
-                time.sleep(wait_time)
-                print(f'Retrying {url}... (Attempt: {retries}) Error: {e}')  
+    def calculate_average_clicks(self):
+        total_clicks = sum(entry['clicks'] for entry in self.data)
+        return total_clicks / len(self.data) if self.data else 0
 
-    def fetch_data(self, url):
-        return self._retry_request(url)
+    def convert_to_json(self):
+        return json.dumps(self.data)
 
-if __name__ == '__main__':
-    network_ops = NetworkOperations()
-    try:
-        data = network_ops.fetch_data('https://api.example.com/data')
-        print(json.dumps(data, indent=2))
-    except NetworkError as e:
-        print(e)
+    def from_json(self, json_data):
+        self.data = json.loads(json_data)
+
+    def get_click_data_summary(self):
+        filtered_data = self.filter_by_threshold(100)
+        average = self.calculate_average_clicks()
+        return {
+            'filtered_entries': len(filtered_data),
+            'average_clicks': average
+        }
+
+# Example usage:
+# data = [{'time': '2023-01-01', 'clicks': 150}, {'time': '2023-01-02', 'clicks': 90}]
+# processor = AutoClickerDataProcessor(data)
+# print(processor.get_click_data_summary())
