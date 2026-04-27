@@ -1,43 +1,45 @@
-from typing import List, Dict, Any
+import time
+import random
 
 
-def click_with_delay(clicks: int, delay: float) -> None:
-    """
-    Simulate a series of clicks with a specified delay.
-
-    Args:
-        clicks (int): The number of clicks to simulate.
-        delay (float): The time in seconds to wait between clicks.
-    """
-    import time
-    for _ in range(clicks):
-        print("Click!")  # Placeholder for actual click action
-        time.sleep(delay)
+def sleep_random(min_seconds, max_seconds):
+    delay = random.uniform(min_seconds, max_seconds)
+    time.sleep(delay)
+    return delay
 
 
-def create_click_config(clicks: List[int], delays: List[float]) -> List[Dict[str, Any]]:
-    """
-    Create a list of click configurations.
-
-    Args:
-        clicks (List[int]): A list of click counts.
-        delays (List[float]): A list of corresponding delays.
-
-    Returns:
-        List[Dict[str, Any]]: A list of dictionaries with click and delay configurations.
-    """
-    return [{"clicks": c, "delay": d} for c, d in zip(clicks, delays)]
+def get_current_time():
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
 
 
-def validate_clicks_and_delays(clicks: int, delay: float) -> bool:
-    """
-    Validate the number of clicks and delay.
+def click_position(x, y):
+    import pyautogui
+    pyautogui.click(x, y)
 
-    Args:
-        clicks (int): The number of clicks to validate.
-        delay (float): The delay value to validate.
 
-    Returns:
-        bool: True if valid, otherwise False.
-    """
-    return clicks > 0 and delay > 0.0
+def is_hotkey_pressed(hotkey):
+    from pynput import keyboard
+    pressed = set()
+
+    def on_press(key):
+        try:
+            pressed.add(key.char)
+        except AttributeError:
+            pressed.add(key)
+
+    def on_release(key):
+        pressed.discard(key)
+        if all(k in pressed for k in hotkey):
+            return False
+        if key == keyboard.Key.esc:
+            return False
+
+    with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+        listener.join()
+    return True
+
+
+def random_click(min_x, max_x, min_y, max_y):
+    x = random.randint(min_x, max_x)
+    y = random.randint(min_y, max_y)
+    click_position(x, y)
