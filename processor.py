@@ -1,31 +1,38 @@
-import json
+import time
+import threading
+from queue import Queue
 
-class AutoClickerDataProcessor:
-    def __init__(self, data):
-        self.data = data
+class ClickProcessor:
+    def __init__(self, click_interval=0.1):
+        self.click_interval = click_interval
+        self.is_running = False
+        self.queue = Queue()
 
-    def filter_by_threshold(self, threshold):
-        return [entry for entry in self.data if entry['clicks'] >= threshold]
+    def start_auto_clicker(self):
+        self.is_running = True
+        threading.Thread(target=self._process_queue, daemon=True).start()
 
-    def calculate_average_clicks(self):
-        total_clicks = sum(entry['clicks'] for entry in self.data)
-        return total_clicks / len(self.data) if self.data else 0
+    def stop_auto_clicker(self):
+        self.is_running = False
 
-    def convert_to_json(self):
-        return json.dumps(self.data)
+    def _process_queue(self):
+        while self.is_running:
+            if not self.queue.empty():
+                self._perform_click(self.queue.get_nowait())
+            time.sleep(self.click_interval)
 
-    def from_json(self, json_data):
-        self.data = json.loads(json_data)
+    def queue_click(self, click_coordinates):
+        self.queue.put(click_coordinates)
 
-    def get_click_data_summary(self):
-        filtered_data = self.filter_by_threshold(100)
-        average = self.calculate_average_clicks()
-        return {
-            'filtered_entries': len(filtered_data),
-            'average_clicks': average
-        }
+    def _perform_click(self, coords):
+        # Simulated click action at specified coordinates
+        print(f"Clicking at {coords}")
 
-# Example usage:
-# data = [{'time': '2023-01-01', 'clicks': 150}, {'time': '2023-01-02', 'clicks': 90}]
-# processor = AutoClickerDataProcessor(data)
-# print(processor.get_click_data_summary())
+if __name__ == '__main__':
+    processor = ClickProcessor()
+    processor.start_auto_clicker()
+    processor.queue_click((100, 200))
+    time.sleep(1)
+    processor.queue_click((150, 250))
+    time.sleep(1)
+    processor.stop_auto_clicker()
