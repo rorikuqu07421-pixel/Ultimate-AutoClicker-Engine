@@ -1,41 +1,40 @@
 import time
 import threading
-from typing import Callable
 
 class AutoClicker:
-    def __init__(self, click_interval: float, click_action: Callable[[], None]) -> None:
-        """Initialize an AutoClicker instance.
-
-        Args:
-            click_interval (float): Time interval between clicks in seconds.
-            click_action (Callable[[], None]): Function to execute on each click.
-        """
+    def __init__(self, click_interval):
         self.click_interval = click_interval
-        self.click_action = click_action
         self.running = False
-        self.thread = threading.Thread(target=self._run)
+        self.thread = None
 
-    def start(self) -> None:
-        """Start the auto-clicker thread."""
-        self.running = True
-        self.thread.start()
+    def start(self):
+        if not self.running:
+            self.running = True
+            self.thread = threading.Thread(target=self._click_loop)
+            self.thread.start()
 
-    def stop(self) -> None:
-        """Stop the auto-clicker thread."""
+    def stop(self):
         self.running = False
-        self.thread.join()
+        if self.thread:
+            self.thread.join()
 
-    def _run(self) -> None:
+    def _click_loop(self):
         while self.running:
-            self.click_action()
+            self.simulate_click()
             time.sleep(self.click_interval)
 
-# Example usage:
-if __name__ == '__main__':
-    def example_click():
-        print('Clicked!')
+    def simulate_click(self):
+        # Simulate the click action (placeholder)
+        print('Click!')
 
-    clicker = AutoClicker(1.0, example_click)
-    clicker.start()
-    time.sleep(5)
-    clicker.stop()
+    def adjust_click_interval(self, new_interval):
+        if new_interval > 0:
+            self.click_interval = new_interval
+
+if __name__ == '__main__':
+    autoclicker = AutoClicker(0.1)
+    autoclicker.start()
+    time.sleep(1)
+    autoclicker.adjust_click_interval(0.05)
+    time.sleep(3)
+    autoclicker.stop()
