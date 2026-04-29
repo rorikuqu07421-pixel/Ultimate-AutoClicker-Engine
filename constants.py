@@ -1,36 +1,18 @@
-BUTTON_CLICK_INTERVAL = 0.01
-MAX_AUTO_CLICKS = 10000
-DEFAULT_DELAY = 100
+MAX_CLICKS = 1000
+CLICK_INTERVAL = 0.01
+ERROR_MESSAGES = {
+    'EXCEEDS_MAX_CLICKS': 'Number of clicks exceeds the maximum limit.',
+    'INVALID_INTERVAL': 'Click interval must be a positive number.',
+    'INVALID_CLICKS': 'Number of clicks must be an integer.',
+}
 
-# Mouse button types
-LEFT_BUTTON = 'left'
-RIGHT_BUTTON = 'right'
-MIDDLE_BUTTON = 'middle'
+def validate_clicks(clicks):
+    if not isinstance(clicks, int):
+        raise ValueError(ERROR_MESSAGES['INVALID_CLICKS'])
+    if clicks < 1 or clicks > MAX_CLICKS:
+        raise ValueError(ERROR_MESSAGES['EXCEEDS_MAX_CLICKS'])
 
-# Window positions
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
 
-# Log level constants
-LOG_LEVEL_DEBUG = 10
-LOG_LEVEL_INFO = 20
-LOG_LEVEL_WARNING = 30
-LOG_LEVEL_ERROR = 40
-LOG_LEVEL_CRITICAL = 50
-
-# Error messages
-ERROR_INVALID_POSITION = 'Invalid mouse position'
-ERROR_EXCEEDS_MAX_CLICKS = 'Exceeded maximum click limit'
-
-# Click modes
-SINGLE_CLICK = 'single'
-DOUBLE_CLICK = 'double'
-
-# Autoclicker states
-STATE_RUNNING = 'running'
-STATE_STOPPED = 'stopped'
-STATE_PAUSED = 'paused'
-
-# Misc constants
-VERSION = '1.0.0'
-AUTHOR = 'Ultimate AutoClicker Team'
+def validate_interval(interval):
+    if not isinstance(interval, (int, float)) or interval <= 0:
+        raise ValueError(ERROR_MESSAGES['INVALID_INTERVAL'])
