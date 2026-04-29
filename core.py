@@ -1,40 +1,31 @@
 import time
+import random
 import threading
 
-class AutoClicker:
-    def __init__(self, click_interval):
-        self.click_interval = click_interval
-        self.running = False
-        self.thread = None
+def click(x, y):
+    print(f'Clicking at ({x}, {y})')
+    # Simulated mouse click
 
-    def start(self):
-        if not self.running:
-            self.running = True
-            self.thread = threading.Thread(target=self._click_loop)
-            self.thread.start()
+def auto_clicker(interval, duration):
+    end_time = time.time() + duration
+    while time.time() < end_time:
+        x, y = random.randint(0, 1920), random.randint(0, 1080)
+        click(x, y)
+        time.sleep(interval)
 
-    def stop(self):
-        self.running = False
-        if self.thread:
-            self.thread.join()
+class AutoClickerThread(threading.Thread):
+    def __init__(self, interval, duration):
+        super().__init__()
+        self.interval = interval
+        self.duration = duration
+        self.daemon = True
 
-    def _click_loop(self):
-        while self.running:
-            self.simulate_click()
-            time.sleep(self.click_interval)
-
-    def simulate_click(self):
-        # Simulate the click action (placeholder)
-        print('Click!')
-
-    def adjust_click_interval(self, new_interval):
-        if new_interval > 0:
-            self.click_interval = new_interval
+    def run(self):
+        auto_clicker(self.interval, self.duration)
 
 if __name__ == '__main__':
-    autoclicker = AutoClicker(0.1)
-    autoclicker.start()
-    time.sleep(1)
-    autoclicker.adjust_click_interval(0.05)
-    time.sleep(3)
-    autoclicker.stop()
+    interval = 0.1  # 10 clicks per second
+    duration = 5    # 5 seconds of clicking
+    click_thread = AutoClickerThread(interval, duration)
+    click_thread.start()
+    click_thread.join()  # Wait for the clicking to finish
