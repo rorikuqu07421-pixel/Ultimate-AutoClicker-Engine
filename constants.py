@@ -1,29 +1,32 @@
-from typing import Final, Dict
+CLICK_INTERVAL = 0.1
 
-# Constants for the Auto Clicker Engine
+# Directions for moving the mouse
+UP = 'up'
+DOWN = 'down'
+LEFT = 'left'
+RIGHT = 'right'
 
-CLICK_INTERVAL: Final[float] = 0.1  # Time in seconds between clicks
-MAX_CLICKS: Final[int] = 1000  # Maximum number of clicks in a session
-SCREEN_RESOLUTION: Final[Dict[str, int]] = {'width': 1920, 'height': 1080}  # Default screen resolution
+# Default settings for the autoclicker
+DEFAULT_CLICK_COUNT = 100
+DEFAULT_DELAY = 0.01
+DEFAULT_MODE = 'single'
 
-# Default click settings
-DEFAULT_SETTINGS: Final[Dict[str, float]] = {
-    'click_interval': CLICK_INTERVAL,
-    'max_clicks': MAX_CLICKS
-}
+# Messages
+START_MESSAGE = 'Autoclicker started...'
+STOP_MESSAGE = 'Autoclicker stopped.'
 
-def get_screen_size() -> Dict[str, int]:
-    """Retrieve current screen resolution.
+# Error messages
+INVALID_MODE_ERROR = 'Invalid mode, please use single or multi.'
+CLICK_COUNT_ERROR = 'Click count must be a positive integer.'
 
-    Returns:
-        Dict[str, int]: A dictionary containing 'width' and 'height' keys.
-    """
-    return SCREEN_RESOLUTION
+# Threshold for click speed
+MIN_CLICK_SPEED = 0.01
+MAX_CLICK_SPEED = 1.0
 
-def get_default_settings() -> Dict[str, float]:
-    """Retrieve default settings for the clicker.
+# Hotkeys
+START_HOTKEY = 'f5'
+STOP_HOTKEY = 'f6'
 
-    Returns:
-        Dict[str, float]: A dictionary of default clicker settings.
-    """
-    return DEFAULT_SETTINGS
+# Other constants
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
