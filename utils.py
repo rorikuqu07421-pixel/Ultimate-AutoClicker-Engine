@@ -1,35 +1,24 @@
-import json
+import time
+import requests
+from requests.exceptions import RequestException
 
-def read_config(file_path):
+def retry_request(url, max_retries=5, delay=2):
+    attempt = 0
+    while attempt < max_retries:
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except RequestException as e:
+            print(f'Attempt {attempt + 1} failed: {e}')
+            attempt += 1
+            time.sleep(delay)
+    raise Exception(f'Failed to retrieve data from {url} after {max_retries} attempts')
+
+# Example use case
+if __name__ == '__main__':
     try:
-        with open(file_path, 'r') as file:
-            data = json.load(file)
-        return data
-    except FileNotFoundError:
-        print(f"Error: The file {file_path} was not found.")
-        return None
-    except json.JSONDecodeError:
-        print(f"Error: Failed to decode JSON from {file_path}.")
-        return None
-
-
-def write_config(file_path, data):
-    try:
-        with open(file_path, 'w') as file:
-            json.dump(data, file, indent=4)
-        print(f"Config written to {file_path}.")
-    except IOError:
-        print(f"Error: Could not write to {file_path}.")
-
-
-def update_config(file_path, updates):
-    config = read_config(file_path)
-    if config is not None:
-        config.update(updates)
-        write_config(file_path, config)
-
-
-def display_config(file_path):
-    config = read_config(file_path)
-    if config is not None:
-        print(json.dumps(config, indent=4))
+        data = retry_request('https://api.example.com/data')
+        print(data)
+    except Exception as e:
+        print(e)
