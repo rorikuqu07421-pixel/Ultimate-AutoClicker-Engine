@@ -1,31 +1,38 @@
 import time
-import random
 import threading
+from queue import Queue
 
-def click(x, y):
-    print(f'Clicking at ({x}, {y})')
-    # Simulated mouse click
-
-def auto_clicker(interval, duration):
-    end_time = time.time() + duration
-    while time.time() < end_time:
-        x, y = random.randint(0, 1920), random.randint(0, 1080)
-        click(x, y)
-        time.sleep(interval)
-
-class AutoClickerThread(threading.Thread):
-    def __init__(self, interval, duration):
-        super().__init__()
+class AutoClicker:
+    def __init__(self, interval, limit):
         self.interval = interval
-        self.duration = duration
-        self.daemon = True
+        self.limit = limit
+        self.clicks = Queue()
+        self.running = False
 
-    def run(self):
-        auto_clicker(self.interval, self.duration)
+    def start_clicking(self):
+        if not self.running:
+            self.running = True
+            threading.Thread(target=self._click).start()
+
+    def _click(self):
+        count = 0
+        while self.running and count < self.limit:
+            self.clicks.put('click')  # Simulate a click
+            time.sleep(self.interval)
+            count += 1
+
+    def stop_clicking(self):
+        self.running = False
+
+    def get_clicks_count(self):
+        return self.clicks.qsize()
+
+    def clear_clicks(self):
+        self.clicks.queue.clear()
 
 if __name__ == '__main__':
-    interval = 0.1  # 10 clicks per second
-    duration = 5    # 5 seconds of clicking
-    click_thread = AutoClickerThread(interval, duration)
-    click_thread.start()
-    click_thread.join()  # Wait for the clicking to finish
+    ac = AutoClicker(0.1, 10)  # 10 clicks at 0.1 seconds
+    ac.start_clicking()
+    time.sleep(1)
+    print('Total clicks:', ac.get_clicks_count())
+    ac.stop_clicking()
