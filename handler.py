@@ -1,44 +1,25 @@
-from typing import Callable, Optional
+import requests
 import time
+import json
 
-class AutoClicker:
-    def __init__(self, click_interval: float) -> None:
-        """
-        Initializes the AutoClicker with a specified interval between clicks.
+def retry_request(url, max_retries=5, backoff_factor=1):
+    tries = 0
+    while tries < max_retries:
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            tries += 1
+            wait = backoff_factor * (2 ** (tries - 1))
+            print(f"Attempt {tries} failed: {e}. Retrying in {wait} seconds...")
+            time.sleep(wait)
+    raise Exception(f'All {max_retries} attempts failed.')
 
-        :param click_interval: Time in seconds between each simulated click.
-        """
-        self.click_interval = click_interval
-        self.running = False
-
-    def start_clicking(self, click_action: Callable, duration: Optional[float] = None) -> None:
-        """
-        Starts the auto-clicking process.
-
-        :param click_action: A callable that performs the click action.
-        :param duration: Optional duration in seconds; if specified, stops clicking after this duration.
-        """
-        self.running = True
-        end_time = time.time() + duration if duration else None
-        while self.running:
-            click_action()
-            time.sleep(self.click_interval)
-            if end_time and time.time() >= end_time:
-                break
-
-    def stop_clicking(self) -> None:
-        """
-        Stops the auto-clicking process.
-        """
-        self.running = False
-
-# Example click action function
-
-def example_click():
-    print("Clicked!")
-
-# Example usage
 if __name__ == '__main__':
-    auto_clicker = AutoClicker(0.5)  # Click every 0.5 seconds
-    # This will start clicking for 5 seconds
-    auto_clicker.start_clicking(example_click, 5)
+    url = 'https://api.example.com/data'
+    try:
+        data = retry_request(url)
+        print(json.dumps(data, indent=4))
+    except Exception as error:
+        print(f'Error fetching data: {error}')
