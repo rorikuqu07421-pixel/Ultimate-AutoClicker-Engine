@@ -1,38 +1,48 @@
 import time
+import json
 import threading
-from queue import Queue
 
 class AutoClicker:
-    def __init__(self, interval, limit):
+    def __init__(self, interval=1.0, click_count=10):
         self.interval = interval
-        self.limit = limit
-        self.clicks = Queue()
-        self.running = False
+        self.click_count = click_count
+        self.is_running = False
 
     def start_clicking(self):
-        if not self.running:
-            self.running = True
-            threading.Thread(target=self._click).start()
+        if self.is_running:
+            return
+        self.is_running = True
+        threading.Thread(target=self._click).start()
 
     def _click(self):
-        count = 0
-        while self.running and count < self.limit:
-            self.clicks.put('click')  # Simulate a click
+        for _ in range(self.click_count):
+            if not self.is_running:
+                break
+            self.perform_click()
             time.sleep(self.interval)
-            count += 1
 
     def stop_clicking(self):
-        self.running = False
+        self.is_running = False
 
-    def get_clicks_count(self):
-        return self.clicks.qsize()
+    def perform_click(self):
+        # Simulate a click action
+        print('Click!')
 
-    def clear_clicks(self):
-        self.clicks.queue.clear()
+    def save_clicker_data(self, filename='clicker_data.json'):
+        data = {'interval': self.interval, 'click_count': self.click_count}
+        with open(filename, 'w') as f:
+            json.dump(data, f)
+
+    def load_clicker_data(self, filename='clicker_data.json'):
+        with open(filename, 'r') as f:
+            data = json.load(f)
+            self.interval = data['interval']
+            self.click_count = data['click_count']
 
 if __name__ == '__main__':
-    ac = AutoClicker(0.1, 10)  # 10 clicks at 0.1 seconds
-    ac.start_clicking()
-    time.sleep(1)
-    print('Total clicks:', ac.get_clicks_count())
-    ac.stop_clicking()
+    clicker = AutoClicker(interval=0.5, click_count=5)
+    clicker.start_clicking()
+    time.sleep(3)
+    clicker.stop_clicking()
+    clicker.save_clicker_data()
+    clicker.load_clicker_data()
